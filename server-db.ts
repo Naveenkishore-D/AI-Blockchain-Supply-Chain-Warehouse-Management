@@ -13,7 +13,7 @@ import {
   Shipment, 
   BlockchainBlock, 
   StockMovement 
-} from './src/types';
+} from './src/types.js';
 
 // ============================================================================
 // 1. MYSQL CONNECTION POOL SETUP

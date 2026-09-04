@@ -8,17 +8,17 @@ import {
   addBlockchainBlock, 
   calculateBlockHash, 
   generateBlockSignature 
-} from "./server-db";
-import { Supplier, Customer, Warehouse, InventoryItem, PurchaseOrder, SalesOrder, Shipment } from "./src/types";
-import { openapiSpecification } from "./src/openapi";
+} from "./server-db.js";
+import { Supplier, Customer, Warehouse, InventoryItem, PurchaseOrder, SalesOrder, Shipment } from "./src/types.js";
+import { openapiSpecification } from "./src/openapi.js";
 import helmet from "helmet";
 import cors from "cors";
 import rateLimit from "express-rate-limit";
-import authRouter from "./src/api/auth";
-import { requireAuth, requireRole } from "./src/middleware";
-import inventoryRouter from "./src/api/inventory";
-import supplierRouter from "./src/api/suppliers";
-import { logger, errorHandler } from "./src/middleware";
+import authRouter from "./src/api/auth.js";
+import { requireAuth, requireRole } from "./src/middleware.js";
+import inventoryRouter from "./src/api/inventory.js";
+import supplierRouter from "./src/api/suppliers.js";
+import { logger, errorHandler } from "./src/middleware.js";
 
 dotenv.config();
 

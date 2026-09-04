@@ -2,8 +2,8 @@ import { Router, Request, Response, NextFunction } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { z } from 'zod';
-import { loadDB, saveDB } from '../../server-db';
-import { requireAuth, requireRole } from '../middleware';
+import { loadDB, saveDB } from '../../server-db.js';
+import { requireAuth, requireRole } from '../middleware.js';
 
 const router = Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-key-change-me';

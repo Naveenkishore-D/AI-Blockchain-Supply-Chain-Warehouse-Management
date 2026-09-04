@@ -1,7 +1,7 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
-import { loadDB, saveDB, addBlockchainBlock } from '../../server-db';
-import { InventoryItem, StockMovement } from '../types';
+import { loadDB, saveDB, addBlockchainBlock } from '../../server-db.js';
+import { InventoryItem, StockMovement } from '../types.js';
 
 const router = Router();
 
