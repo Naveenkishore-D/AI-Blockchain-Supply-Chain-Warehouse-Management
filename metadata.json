@@ -1,0 +1,6 @@
+{
+  "name": "AI Blockchain Supply Chain & Warehouse Management",
+  "description": "An enterprise-grade supply chain and warehouse management system featuring supplier logs, automated purchase/sales orders, shipment tracking, blockchain-based secure traceability logs, and an integrated server-side Gemini AI Agent for predicting shortages, running natural language queries, and generating reports.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,34 @@
+{
+  "entities": {
+    "users": {
+      "title": "User",
+      "description": "User profile with Google auth mapping and local authorization roles",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Firebase UID of the user"
+        },
+        "email": {
+          "type": "string",
+          "description": "Email address"
+        },
+        "username": {
+          "type": "string",
+          "description": "Unique display name or identifier"
+        },
+        "role": {
+          "type": "string",
+          "description": "Clearance role (Admin, Warehouse Manager, Supplier, Customer)"
+        }
+      },
+      "required": ["uid", "email", "username", "role"]
+    }
+  },
+  "firestore": {
+    "users/{userId}": {
+      "schema": "users",
+      "description": "Authenticated user records matching Firebase Authentication UIDs"
+    }
+  }
+}

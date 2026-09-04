@@ -1,0 +1,1693 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-950 text-slate-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Blockchain Supply Chain & Warehouse Management Dashboard</title>
+    <!-- Tailwind CSS Play CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #020617;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #334155;
+        }
+    </style>
+</head>
+<body class="h-full flex flex-col antialiased bg-slate-950 text-slate-100">
+
+    <!-- Top Executive Header -->
+    <header class="border-b border-slate-800 bg-slate-900/50 backdrop-blur px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4 shrink-0">
+        <div class="flex items-center gap-3">
+            <div class="bg-indigo-500/10 text-indigo-400 p-2.5 rounded-xl border border-indigo-500/20 shadow-md">
+                <i data-lucide="shield-check" class="w-6 h-6 text-indigo-400"></i>
+            </div>
+            <div>
+                <h1 class="text-lg font-extrabold tracking-tight text-white flex items-center gap-2">
+                    NEXUS AI LEDGER
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
+                        <span class="w-1.5 h-1.5 bg-indigo-400 rounded-full mr-1.5 animate-pulse"></span>
+                        SIMULATION MODE (OFFLINE)
+                    </span>
+                </h1>
+                <p class="text-xs text-slate-400">AI-Powered Cryptographic Supply Chain & Warehouse Management Suite</p>
+            </div>
+        </div>
+
+        <!-- Connection Settings -->
+        <div class="flex flex-wrap items-center gap-3 bg-slate-900/65 p-2 rounded-xl border border-slate-800 w-full sm:w-auto">
+            <span class="text-xs text-slate-400 font-mono pl-2">System Health:</span>
+            <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" id="header-integrity-badge">
+                <i data-lucide="activity" class="w-3.5 h-3.5 mr-1 animate-pulse"></i> SECURE
+            </span>
+            <button 
+                onclick="resetBlockchainToDefault()" 
+                class="bg-slate-800 hover:bg-slate-700 text-white rounded-lg px-3 py-1 text-xs font-medium flex items-center gap-1.5 transition-all w-full sm:w-auto justify-center"
+            >
+                <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                Reset Ledger
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
+
+        <!-- Section Navigation Tabs -->
+        <div class="border-b border-slate-800 flex flex-wrap gap-2 pb-2">
+            <button onclick="switchTab('dashboard')" class="tab-btn px-4 py-2 text-xs font-bold tracking-wider uppercase rounded-xl transition duration-200 border border-transparent bg-slate-900 text-indigo-400 border-indigo-500/30" id="tab-dashboard-btn">
+                <span class="flex items-center gap-2"><i data-lucide="layout-dashboard" class="w-4 h-4"></i> Overview</span>
+            </button>
+            <button onclick="switchTab('control')" class="tab-btn px-4 py-2 text-xs font-bold tracking-wider uppercase rounded-xl transition duration-200 border border-transparent text-slate-400 hover:bg-slate-900/50 hover:text-slate-200" id="tab-control-btn">
+                <span class="flex items-center gap-2"><i data-lucide="cpu" class="w-4 h-4"></i> Control Panel</span>
+            </button>
+            <button onclick="switchTab('ledger')" class="tab-btn px-4 py-2 text-xs font-bold tracking-wider uppercase rounded-xl transition duration-200 border border-transparent text-slate-400 hover:bg-slate-900/50 hover:text-slate-200" id="tab-ledger-btn">
+                <span class="flex items-center gap-2"><i data-lucide="boxes" class="w-4 h-4"></i> Cryptographic Ledger</span>
+            </button>
+            <button onclick="switchTab('inventory')" class="tab-btn px-4 py-2 text-xs font-bold tracking-wider uppercase rounded-xl transition duration-200 border border-transparent text-slate-400 hover:bg-slate-900/50 hover:text-slate-200" id="tab-inventory-btn">
+                <span class="flex items-center gap-2"><i data-lucide="box" class="w-4 h-4"></i> Warehouse Inventory</span>
+            </button>
+            <button onclick="switchTab('logistics')" class="tab-btn px-4 py-2 text-xs font-bold tracking-wider uppercase rounded-xl transition duration-200 border border-transparent text-slate-400 hover:bg-slate-900/50 hover:text-slate-200" id="tab-logistics-btn">
+                <span class="flex items-center gap-2"><i data-lucide="truck" class="w-4 h-4"></i> Cold-Chain Logistics</span>
+            </button>
+            <button onclick="switchTab('reports')" class="tab-btn px-4 py-2 text-xs font-bold tracking-wider uppercase rounded-xl transition duration-200 border border-transparent text-slate-400 hover:bg-slate-900/50 hover:text-slate-200" id="tab-reports-btn">
+                <span class="flex items-center gap-2"><i data-lucide="file-text" class="w-4 h-4"></i> Audit Reports</span>
+            </button>
+        </div>
+
+        <!-- 1. OVERVIEW TAB -->
+        <section id="tab-dashboard" class="tab-content space-y-6">
+            <!-- Top Overview Statistics Cards Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <!-- Total Blocks -->
+                <div class="bg-slate-900 border border-slate-800/80 rounded-2xl p-5 relative overflow-hidden group hover:border-indigo-500/30 transition-all duration-300 shadow-lg">
+                    <div class="flex justify-between items-start mb-3">
+                        <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Ledger Height</span>
+                        <span class="bg-indigo-500/10 text-indigo-400 p-1.5 rounded-lg border border-indigo-500/10">
+                            <i data-lucide="boxes" class="w-4 h-4"></i>
+                        </span>
+                    </div>
+                    <div class="text-3xl font-bold font-mono tracking-tight text-white mb-1" id="stat-total-blocks">3</div>
+                    <p class="text-[10px] text-slate-400 font-mono">Consensus Blocks Sealed</p>
+                </div>
+
+                <!-- Last Block Hash -->
+                <div class="bg-slate-900 border border-slate-800/80 rounded-2xl p-5 relative overflow-hidden group hover:border-indigo-500/30 transition-all duration-300 md:col-span-2 shadow-lg">
+                    <div class="flex justify-between items-start mb-3">
+                        <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Last Signed Block Hash</span>
+                        <span class="bg-indigo-500/10 text-indigo-400 p-1.5 rounded-lg border border-indigo-500/10">
+                            <i data-lucide="fingerprint" class="w-4 h-4"></i>
+                        </span>
+                    </div>
+                    <div class="text-sm font-bold font-mono tracking-tight text-indigo-400 truncate mb-1" id="stat-last-hash">Calculated on initialize...</div>
+                    <p class="text-[10px] text-slate-400 font-mono" id="stat-last-timestamp">Block #2 Sealed: Just now</p>
+                </div>
+
+                <!-- System Status -->
+                <div class="bg-slate-900 border border-slate-800/80 rounded-2xl p-5 relative overflow-hidden group hover:border-indigo-500/30 transition-all duration-300 shadow-lg">
+                    <div class="flex justify-between items-start mb-3">
+                        <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Audit Status</span>
+                        <span class="bg-indigo-500/10 text-indigo-400 p-1.5 rounded-lg border border-indigo-500/10">
+                            <i data-lucide="shield-check" class="w-4 h-4"></i>
+                        </span>
+                    </div>
+                    <div class="text-2xl font-bold tracking-tight text-emerald-400 mb-1 flex items-center gap-2" id="stat-system-status">
+                        SECURE
+                    </div>
+                    <p class="text-[10px] text-slate-400 font-mono" id="stat-low-stock-count">0 Low Stock Alert SKUs</p>
+                </div>
+            </div>
+
+            <!-- Welcome & Core Simulated AI Panel -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Visual Summary Grid -->
+                <div class="lg:col-span-7 bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
+                    <div class="space-y-2">
+                        <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                            <i data-lucide="rocket" class="text-indigo-400 w-5 h-5"></i> Dashboard Command Center
+                        </h2>
+                        <p class="text-slate-300 text-sm leading-relaxed">
+                            Welcome to the offline Nexus blockchain simulator. This fully reactive interface showcases how cryptography ensures immutable audits across inventory shifts, cold-chain operations, and supplier logistics. Use the navigation buttons above to view and interact with each functional module.
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+                            <span class="text-[10px] uppercase font-bold tracking-wider text-slate-400 font-mono">Current Audit Health</span>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-semibold" id="audit-pct-text">100% Cryptographic Security</span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" id="audit-indicator-dot"></span>
+                            </div>
+                            <div class="w-full bg-slate-800 rounded-full h-1.5">
+                                <div id="audit-progress-bar" class="bg-emerald-500 h-1.5 rounded-full transition-all duration-500" style="width: 100%"></div>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+                            <span class="text-[10px] uppercase font-bold tracking-wider text-slate-400 font-mono">Active Shipments Fleet</span>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-semibold" id="dashboard-active-shipments">3 In Transit</span>
+                                <i data-lucide="truck" class="w-4 h-4 text-indigo-400"></i>
+                            </div>
+                            <div class="text-[10px] text-slate-400 font-mono">Cold-Chain Temperature: Stable</div>
+                        </div>
+                    </div>
+
+                    <!-- Fast Action Panel -->
+                    <div class="border-t border-slate-800 pt-4 space-y-3">
+                        <h3 class="text-xs font-bold uppercase text-slate-400 font-mono">Quick Actions</h3>
+                        <div class="flex flex-wrap gap-2">
+                            <button onclick="switchTab('control')" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition flex items-center gap-1.5">
+                                <i data-lucide="cpu" class="w-3.5 h-3.5"></i> Run Audit Control
+                            </button>
+                            <button onclick="switchTab('inventory')" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold px-4 py-2.5 rounded-xl transition flex items-center gap-1.5">
+                                <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i> Add Inventory item
+                            </button>
+                            <button onclick="switchTab('logistics')" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold px-4 py-2.5 rounded-xl transition flex items-center gap-1.5">
+                                <i data-lucide="navigation" class="w-3.5 h-3.5"></i> Dispatch Shipment
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chatbot Simulator Widget on Home -->
+                <div class="lg:col-span-5 bg-slate-900 border border-slate-800 rounded-2xl flex flex-col h-[420px] shadow-xl">
+                    <div class="border-b border-slate-800 p-4 flex items-center gap-3 bg-slate-900/50 rounded-t-2xl shrink-0">
+                        <div class="bg-indigo-500/10 text-indigo-400 p-1.5 rounded-lg border border-indigo-500/10">
+                            <i data-lucide="bot" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-sm font-bold uppercase tracking-wider text-white">Interactive AI Logistics Core</h2>
+                            <p class="text-[10px] text-slate-400">Ask questions, locate stock, or verify cryptography.</p>
+                        </div>
+                    </div>
+
+                    <!-- Chat Messages Feed -->
+                    <div class="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar text-xs" id="chat-messages">
+                        <!-- Greeting message -->
+                        <div class="flex gap-3 max-w-[85%]">
+                            <div class="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 flex items-center justify-center shrink-0">
+                                <i data-lucide="bot" class="w-4 h-4"></i>
+                            </div>
+                            <div class="bg-slate-950 border border-slate-800 text-slate-100 p-3 rounded-2xl rounded-tl-none leading-relaxed space-y-2">
+                                <p>Welcome. I am the <strong>Nexus Core AI Engine</strong>.</p>
+                                <p>I am monitoring the cryptographic ledger, low-stock warnings, and warehouse shipments in real time. How may I assist you today?</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chat Input Controller -->
+                    <div class="p-3 border-t border-slate-800 bg-slate-950/40 rounded-b-2xl shrink-0">
+                        <form id="chat-form" onsubmit="sendChatMessage(event)" class="flex gap-2">
+                            <input 
+                                type="text" 
+                                id="chat-input" 
+                                placeholder="Ask about 'audit status', 'low stock', or 'hashing'..." 
+                                required
+                                class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-all font-mono"
+                            >
+                            <button 
+                                type="submit" 
+                                class="bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl p-2 transition-all flex items-center justify-center shrink-0"
+                            >
+                                <i data-lucide="send" class="w-4 h-4"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Block Preview Scroll -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-lg">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 border-b border-slate-800 pb-3">
+                    <div>
+                        <h2 class="text-sm font-bold uppercase tracking-wider text-white">Live Cryptographic Block Feed</h2>
+                        <p class="text-xs text-slate-400">Sequential feed of ledger nodes signed with FNV-1a Hash Mixers.</p>
+                    </div>
+                    <button onclick="switchTab('ledger')" class="text-indigo-400 hover:text-indigo-300 text-xs font-semibold flex items-center gap-1">
+                        View Entire Ledger <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="overview-blocks-preview">
+                    <!-- Loaded dynamically via js -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. CONTROL PANEL TAB -->
+        <section id="tab-control" class="tab-content hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Publish Block Card -->
+                <div class="lg:col-span-7 bg-slate-900 border border-slate-800 rounded-2xl p-6 relative shadow-xl space-y-6">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="bg-indigo-500/10 text-indigo-400 p-2 rounded-lg border border-indigo-500/10">
+                            <i data-lucide="plus-circle" class="w-5 h-5 text-indigo-400"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-base font-bold text-white">Publish New Block to Ledger</h2>
+                            <p class="text-xs text-slate-400">Append high-integrity logistics, cargo, or warehouse events to the blockchain.</p>
+                        </div>
+                    </div>
+
+                    <form id="add-block-form" class="space-y-4" onsubmit="publishBlock(event)">
+                        <div>
+                            <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">Block Payload Data (Supply Chain Event)</label>
+                            <textarea 
+                                id="block-data-input" 
+                                placeholder="Example: Shipment Batch #1094 Temperature Breach Warning: 28.5C recorded at Port of Seattle..." 
+                                required
+                                rows="3"
+                                class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3.5 text-xs text-slate-100 font-mono focus:outline-none focus:border-indigo-500 transition-all custom-scrollbar placeholder-slate-500"
+                            ></textarea>
+                        </div>
+                        <div class="flex justify-end gap-3">
+                            <button 
+                                type="button" 
+                                onclick="fillSampleData()"
+                                class="bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl px-4 py-2 text-xs font-mono transition-all"
+                            >
+                                Insert Sample Action
+                            </button>
+                            <button 
+                                type="submit" 
+                                class="bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl px-5 py-2.5 text-xs font-bold transition-all flex items-center gap-2 shadow-md"
+                            >
+                                <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                                Publish Cryptographic Block
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Blockchain Security & Verification Console -->
+                <div class="lg:col-span-5 bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
+                    <div class="flex items-center gap-3">
+                        <div class="bg-indigo-500/10 text-indigo-400 p-2 rounded-lg border border-indigo-500/10">
+                            <i data-lucide="shield-alert" class="w-5 h-5 text-indigo-400"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-base font-bold text-white">Security & Audit Console</h2>
+                            <p class="text-xs text-slate-400">Trigger cryptographic validation or inject mock breaches.</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-950 rounded-xl border border-slate-800 p-4 font-mono text-xs text-slate-400 space-y-3">
+                        <div class="flex justify-between items-center pb-2 border-b border-slate-900">
+                            <span>Hash Mixer Protocol:</span>
+                            <span class="text-indigo-400 font-bold">Cyrb128-Hex</span>
+                        </div>
+                        <div class="flex justify-between items-center pb-2 border-b border-slate-900">
+                            <span>Current Chain Security:</span>
+                            <span id="audit-status" class="text-emerald-400 font-bold">✅ SECURE</span>
+                        </div>
+                        <div class="max-h-[140px] overflow-y-auto custom-scrollbar space-y-1 text-[11px]" id="audit-logs">
+                            <p class="text-slate-500">Awaiting user action... Click Verify to audit.</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3 pt-2">
+                        <button 
+                            onclick="verifyLedger()" 
+                            class="bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl px-4 py-2.5 text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-md"
+                        >
+                            <i data-lucide="check-circle" class="w-4 h-4"></i>
+                            Verify Integrity
+                        </button>
+                        <button 
+                            onclick="openTamperModal()" 
+                            class="bg-rose-950/40 hover:bg-rose-950/60 text-rose-400 border border-rose-500/20 rounded-xl px-4 py-2.5 text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-md"
+                        >
+                            <i data-lucide="zap-off" class="w-4 h-4"></i>
+                            Tamper Block Data
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. LEDGER TAB -->
+        <section id="tab-ledger" class="tab-content hidden space-y-6">
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 border-b border-slate-800 pb-4">
+                    <div>
+                        <h2 class="text-base font-extrabold text-white flex items-center gap-2">
+                            <i data-lucide="database" class="text-indigo-400 w-5 h-5"></i> Cryptographic Supply Chain Ledger
+                        </h2>
+                        <p class="text-xs text-slate-400">Sequential feed of ledger nodes signed with SHA-256 equivalent hashes. Tampered blocks show corrupted signatures immediately.</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-mono text-slate-400">Status Filter:</span>
+                        <select onchange="filterLedger(this.value)" class="bg-slate-950 border border-slate-800 text-xs font-mono text-indigo-400 rounded-lg p-1.5 focus:outline-none focus:border-indigo-500">
+                            <option value="all">All Blocks</option>
+                            <option value="verified">Verified Only</option>
+                            <option value="tampered">Tampered Only</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Dynamic Blockchain Display Cards -->
+                <div class="space-y-6" id="blocks-container">
+                    <!-- Rendered by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. INVENTORY TAB -->
+        <section id="tab-inventory" class="tab-content hidden space-y-6">
+            <!-- Active Alerts Banner -->
+            <div id="low-stock-banner" class="hidden bg-rose-950/40 border border-rose-500/30 text-rose-200 px-6 py-4 rounded-2xl flex items-center justify-between shadow-lg animate-pulse">
+                <div class="flex items-center gap-3">
+                    <span class="bg-rose-500/20 text-rose-400 p-2 rounded-lg border border-rose-500/20">
+                        <i data-lucide="alert-triangle" class="w-5 h-5 text-rose-400 animate-bounce"></i>
+                    </span>
+                    <div>
+                        <h3 class="text-sm font-bold tracking-tight text-white">CRITICAL WARNING: Warehouse Low-Stock Threshold Breached</h3>
+                        <p class="text-xs text-rose-300">Certain physical SKUs require immediate reordering. Verify ledger logistics before updating inventory.</p>
+                    </div>
+                </div>
+                <div class="text-xs font-mono font-bold bg-rose-500/20 px-3 py-1 rounded-lg text-rose-400 border border-rose-500/20" id="low-stock-count-badge">
+                    2 Alerts Active
+                </div>
+            </div>
+
+            <!-- Content Grid: Add Product & Inventory Status -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Add Product Panel -->
+                <div class="lg:col-span-4 bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="bg-indigo-500/10 text-indigo-400 p-1.5 rounded-lg">
+                            <i data-lucide="package-plus" class="w-5 h-5 text-indigo-400"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-sm font-bold uppercase tracking-wider text-white">Register Warehouse Product</h2>
+                            <p class="text-xs text-slate-400">Add high-integrity physical stock metrics.</p>
+                        </div>
+                    </div>
+
+                    <form id="add-product-form" onsubmit="addProduct(event)" class="space-y-4 text-xs font-mono">
+                        <div class="space-y-1.5">
+                            <label class="block font-bold text-slate-400">Product Name</label>
+                            <input type="text" id="prod-name" placeholder="E.g. Lithium-Ion Cells Pack" required class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-white focus:outline-none focus:border-indigo-500">
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="space-y-1.5">
+                                <label class="block font-bold text-slate-400">SKU Code</label>
+                                <input type="text" id="prod-sku" placeholder="LTH-BAT-501" required class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-white focus:outline-none focus:border-indigo-500">
+                            </div>
+                            <div class="space-y-1.5">
+                                <label class="block font-bold text-slate-400">Category</label>
+                                <select id="prod-category" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-indigo-400 focus:outline-none focus:border-indigo-500">
+                                    <option value="Electronics">Electronics</option>
+                                    <option value="Pharma">Pharma</option>
+                                    <option value="Energy">Energy</option>
+                                    <option value="Aerospace">Aerospace</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="space-y-1.5">
+                                <label class="block font-bold text-slate-400">Quantity</label>
+                                <input type="number" id="prod-qty" min="0" value="100" required class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-white focus:outline-none focus:border-indigo-500">
+                            </div>
+                            <div class="space-y-1.5">
+                                <label class="block font-bold text-slate-400">Reorder level</label>
+                                <input type="number" id="prod-reorder" min="0" value="30" required class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-white focus:outline-none focus:border-indigo-500">
+                            </div>
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="block font-bold text-slate-400">Unit Price ($)</label>
+                            <input type="number" id="prod-price" min="0.01" step="0.01" value="25.00" required class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-white focus:outline-none focus:border-indigo-500">
+                        </div>
+                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-lg transition-all flex items-center justify-center gap-1.5 mt-2">
+                            <i data-lucide="plus-circle" class="w-4 h-4"></i> Add to Warehouse
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Inventory Stock Table -->
+                <div class="lg:col-span-8 bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-800 pb-4">
+                        <div>
+                            <h2 class="text-sm font-bold uppercase tracking-wider text-white">Stock Management Panel</h2>
+                            <p class="text-xs text-slate-400">Modify stock counts dynamically. Low stock alert statuses auto-evaluate on value shifts.</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <input 
+                                type="text" 
+                                id="search-inventory" 
+                                oninput="filterInventory()" 
+                                placeholder="Search SKU or Name..." 
+                                class="bg-slate-950 border border-slate-800 text-xs font-mono text-slate-100 rounded-lg p-2 focus:outline-none focus:border-indigo-500 w-full sm:w-44"
+                            >
+                        </div>
+                    </div>
+
+                    <!-- Reactive Inventory Table -->
+                    <div class="overflow-x-auto custom-scrollbar">
+                        <table class="w-full text-left text-xs font-mono border-collapse">
+                            <thead>
+                                <tr class="border-b border-slate-800 text-slate-400">
+                                    <th class="py-3 px-2">SKU Code</th>
+                                    <th class="py-3 px-2">Product Name</th>
+                                    <th class="py-3 px-2">Category</th>
+                                    <th class="py-3 px-2">Price</th>
+                                    <th class="py-3 px-2 text-center">Stock Count</th>
+                                    <th class="py-3 px-2 text-center">Reorder Lvl</th>
+                                    <th class="py-3 px-2 text-center">Status</th>
+                                    <th class="py-3 px-2 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inventory-tbody" class="divide-y divide-slate-800/60 text-slate-300">
+                                <!-- Loaded dynamically via js -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. LOGISTICS TAB -->
+        <section id="tab-logistics" class="tab-content hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Dispatch Manifest Panel -->
+                <div class="lg:col-span-4 bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="bg-indigo-500/10 text-indigo-400 p-1.5 rounded-lg">
+                            <i data-lucide="navigation" class="w-5 h-5 text-indigo-400"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-sm font-bold uppercase tracking-wider text-white">Dispatch Cold-Chain Cargo</h2>
+                            <p class="text-xs text-slate-400">Dispatch cargo with automated stock reduction and cryptographic ledger validation.</p>
+                        </div>
+                    </div>
+
+                    <form id="dispatch-shipment-form" onsubmit="dispatchShipment(event)" class="space-y-4 text-xs font-mono">
+                        <div class="space-y-1.5">
+                            <label class="block font-bold text-slate-400">Select Item to Dispatch</label>
+                            <select id="dispatch-item-select" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-white focus:outline-none focus:border-indigo-500">
+                                <!-- Populated dynamically by JS -->
+                            </select>
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="block font-bold text-slate-400">Dispatch Quantity</label>
+                            <input type="number" id="dispatch-qty" min="1" value="10" required class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-white focus:outline-none focus:border-indigo-500">
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="block font-bold text-slate-400">Destination Hub</label>
+                            <input type="text" id="dispatch-dest" placeholder="e.g. Frankfurt Cold Hub, DE" required class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-white focus:outline-none focus:border-indigo-500">
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="block font-bold text-slate-400">Logistic Carrier</label>
+                            <select id="dispatch-carrier" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-indigo-400 focus:outline-none focus:border-indigo-500">
+                                <option value="DHL Global Cold">DHL Global Cold</option>
+                                <option value="FedEx Thermo">FedEx Thermo</option>
+                                <option value="UPS SafeFreight">UPS SafeFreight</option>
+                                <option value="Nippon Logistics">Nippon Logistics</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-lg transition-all flex items-center justify-center gap-1.5">
+                            <i data-lucide="truck" class="w-4 h-4"></i> Dispatch & Seal Block
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Logistics Manifest Tracker -->
+                <div class="lg:col-span-8 bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+                    <div class="flex justify-between items-center border-b border-slate-800 pb-4">
+                        <div>
+                            <h2 class="text-sm font-bold uppercase tracking-wider text-white">Active Cargo Manifest Trackers</h2>
+                            <p class="text-xs text-slate-400">Real-time GPS transit monitoring and cold-chain threshold triggers.</p>
+                        </div>
+                    </div>
+
+                    <!-- Reactive Shipments Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="shipments-container">
+                        <!-- Loaded dynamically via js -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. AUDIT REPORTS TAB -->
+        <section id="tab-reports" class="tab-content hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- System Audit Stats Panel -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
+                    <div>
+                        <h2 class="text-sm font-bold uppercase text-white tracking-wider">Executive Ledger Health</h2>
+                        <p class="text-xs text-slate-400">Real-time statistical evaluation of cryptographic immutability.</p>
+                    </div>
+
+                    <div class="space-y-4 font-mono text-xs">
+                        <div class="bg-slate-950 p-4 rounded-xl border border-slate-800/80 space-y-3">
+                            <div class="flex justify-between">
+                                <span class="text-slate-400">Total Chains Monitored:</span>
+                                <span class="text-white font-bold">1 Node Network</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-400">Consensus Height:</span>
+                                <span class="text-white font-bold" id="reports-ledger-height">3 Blocks</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-400">Total Hashing Weight:</span>
+                                <span class="text-white font-bold">128-bit Entropy</span>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-950 p-4 rounded-xl border border-slate-800/80 space-y-3">
+                            <div class="flex justify-between">
+                                <span class="text-slate-400">Total Products Tracked:</span>
+                                <span class="text-indigo-400 font-bold" id="reports-total-skus">4 SKUs</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-400">Overall Inventory Valuation:</span>
+                                <span class="text-emerald-400 font-bold" id="reports-total-value">$0.00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Event Activity Trace Logger -->
+                <div class="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+                    <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                        <div>
+                            <h2 class="text-sm font-bold uppercase tracking-wider text-white">Security Event & State Log</h2>
+                            <p class="text-xs text-slate-400">Chronological telemetry audit of physical and cryptographic events.</p>
+                        </div>
+                        <button onclick="clearSystemLogs()" class="text-slate-400 hover:text-white text-xs font-mono border border-slate-800 hover:bg-slate-950 rounded-lg px-2 py-1 transition-all">
+                            Clear Trace Logs
+                        </button>
+                    </div>
+
+                    <div class="bg-slate-950 rounded-xl border border-slate-800 p-4 font-mono text-xs max-h-[300px] overflow-y-auto custom-scrollbar space-y-2.5" id="reports-logs-container">
+                        <!-- Loaded dynamically via JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Hacking Data Tampering Overlay Modal -->
+    <div id="tamper-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 space-y-4 text-xs shadow-2xl relative animate-fade-in">
+            <button onclick="closeTamperModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <div class="flex items-center gap-3 border-b border-slate-800 pb-3">
+                <div class="bg-rose-500/10 text-rose-400 p-1.5 rounded-lg border border-rose-500/20">
+                    <i data-lucide="zap-off" class="w-5 h-5 text-rose-400"></i>
+                </div>
+                <div>
+                    <h2 class="text-sm font-bold uppercase text-white tracking-wider">Hacking: Tamper Block Data</h2>
+                    <p class="text-[10px] text-slate-400">Simulate a cyber security breach of the distributed database ledger.</p>
+                </div>
+            </div>
+
+            <div class="space-y-3 font-mono">
+                <div class="space-y-1.5">
+                    <label class="block font-bold text-slate-400">Select Block to Hack</label>
+                    <select id="tamper-block-select" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-rose-400 focus:outline-none focus:border-rose-500">
+                        <!-- Populated by JS -->
+                    </select>
+                </div>
+                <div class="space-y-1.5">
+                    <label class="block font-bold text-slate-400">Input Corrupted Payload Data</label>
+                    <textarea 
+                        id="tamper-data-input" 
+                        rows="3" 
+                        required
+                        class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-rose-100 focus:outline-none focus:border-rose-500"
+                        placeholder="TAMPERED: Redirection instructions: Deliver vaccines to secret private vault. Zero quantities verified."
+                    ></textarea>
+                </div>
+                <div class="space-y-1.5 flex items-center gap-2 pt-1.5">
+                    <input type="checkbox" id="tamper-rehash" class="rounded border-slate-800 text-rose-600 focus:ring-rose-500">
+                    <label for="tamper-rehash" class="font-bold text-slate-400 select-none cursor-pointer">Recalculate block's own hash (breaks chain link, keeps own hash correct)</label>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-2.5 pt-2">
+                <button onclick="closeTamperModal()" class="bg-slate-800 hover:bg-slate-700 text-white rounded-xl px-4 py-2 font-medium transition-all">Cancel</button>
+                <button onclick="executeLedgerTamper()" class="bg-rose-600 hover:bg-rose-500 text-white font-bold px-5 py-2 rounded-xl transition-all flex items-center gap-1">
+                    <i data-lucide="shield-alert" class="w-4 h-4"></i> Apply Breach Injection
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Center -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 space-y-3"></div>
+
+    <!-- Script Logic to Bind with Local Spring Boot Endpoint -->
+    <script>
+        // ----------------- BLOCKCHAIN SIM ENGINE -----------------
+        let blockchain = [];
+        const samplePayloads = [
+            "Shipment Batch #1094: Temp monitor OK (5.2C) at Chicago Warehouse Hub",
+            "Purchase Order PO-7729 Approved: Supplier GlobalSourcing Inc.",
+            "Smart Contract Executed: Payment released to Logistics Hub #4",
+            "Warehouse Inventory Check: Stock levels updated for SKU-8849",
+            "IoT Event: Cargo Container #894 G-Force spikes (1.2G) - checking sensors",
+            "Customs Clearance Verified: Cargo ID #892 released at Port of LA"
+        ];
+
+        // Custom deterministic 128-bit hex mixing generator (with no external crypto dependency)
+        function cyrb128(str) {
+            let h1 = 1779033703, h2 = 3024733165, h3 = 3362453659, h4 = 502493725;
+            for (let i = 0, k; i < str.length; i++) {
+                k = str.charCodeAt(i);
+                h1 = h2 ^ Math.imul(h1 ^ k, 597399067);
+                h2 = h3 ^ Math.imul(h2 ^ k, 2869860233);
+                h3 = h4 ^ Math.imul(h3 ^ k, 951274213);
+                h4 = h1 ^ Math.imul(h4 ^ k, 2716044179);
+            }
+            h1 = Math.imul(h3 ^ (h1 >>> 18), 597399067);
+            h2 = Math.imul(h4 ^ (h2 >>> 22), 2869860233);
+            h3 = Math.imul(h1 ^ (h3 >>> 17), 951274213);
+            h4 = Math.imul(h2 ^ (h4 >>> 19), 2716044179);
+            return [(h1^h2^h3^h4)>>>0, (h2^h1)>>>0, (h3^h1)>>>0, (h4^h1)>>>0];
+        }
+
+        function calculateHash(id, timestamp, data, previousHash) {
+            const rawString = `${id}-${timestamp}-${data}-${previousHash}`;
+            const seed = cyrb128(rawString);
+            return seed.map(x => x.toString(16).padStart(8, '0')).join('');
+        }
+
+        function getBlockHash(block) {
+            return calculateHash(block.id, block.timestamp, block.data, block.previousHash);
+        }
+
+        // Initialize default blockchain arrays
+        function resetBlockchainToDefault() {
+            blockchain = [
+                {
+                    id: 0,
+                    timestamp: new Date(Date.now() - 3600000 * 3).toLocaleString(),
+                    data: "GENESIS BLOCK: Secure Nexus Chain Ledger Initialized",
+                    previousHash: "0000000000000000000000000000000000000000000000000000000000000000",
+                    hash: ""
+                },
+                {
+                    id: 1,
+                    timestamp: new Date(Date.now() - 3600000 * 2).toLocaleString(),
+                    data: "IoT Event: Batch #1042 Pharmaceutical Temp Monitor: 4.2C at Hub-Chicago",
+                    previousHash: "",
+                    hash: ""
+                },
+                {
+                    id: 2,
+                    timestamp: new Date(Date.now() - 3600000 * 1).toLocaleString(),
+                    data: "Route Optimization Executed for Cargo ID #772 - Saved 2.1 Hours",
+                    previousHash: "",
+                    hash: ""
+                }
+            ];
+
+            // Calculate correct hashes sequentially
+            blockchain[0].hash = getBlockHash(blockchain[0]);
+            for (let i = 1; i < blockchain.length; i++) {
+                blockchain[i].previousHash = blockchain[i - 1].hash;
+                blockchain[i].hash = getBlockHash(blockchain[i]);
+            }
+
+            addLog("System blockchain reset to initial secure state.", "system");
+            showToast("Blockchain Ledger Reset Successfully!", "success");
+            
+            // Re-render
+            updateUI();
+            verifyLedger(true); // silent verify to reset indicators
+        }
+
+        // ----------------- WAREHOUSE INVENTORY SIM STATE -----------------
+        let inventory = [
+            { id: 1, name: "COVID-19 Vaccines (Cold-Chain)", sku: "COV-VAC-100", category: "Pharma", quantity: 15, reorderLevel: 50, unitPrice: 25.00 },
+            { id: 2, name: "High-Grade Semiconductor Chips", sku: "SEM-CHP-990", category: "Electronics", quantity: 120, reorderLevel: 30, unitPrice: 150.00 },
+            { id: 3, name: "Industrial Lithium Batteries", sku: "LTH-BAT-500", category: "Energy", quantity: 8, reorderLevel: 10, unitPrice: 320.00 },
+            { id: 4, name: "Carbon Fiber Aircraft Panels", sku: "AIR-PNL-204", category: "Aerospace", quantity: 45, reorderLevel: 15, unitPrice: 1250.00 }
+        ];
+
+        // ----------------- LOGISTICS FLEET STATE -----------------
+        let shipments = [
+            { id: "SH-901", product: "COVID-19 Vaccines (Cold-Chain)", qty: 200, destination: "Berlin Hub, DE", carrier: "DHL Global Cold", status: "In Transit" },
+            { id: "SH-902", product: "High-Grade Semiconductor Chips", qty: 500, destination: "Tokyo Port, JP", carrier: "FedEx Thermo", status: "Delivered" },
+            { id: "SH-903", product: "Industrial Lithium Batteries", qty: 40, destination: "Chicago Hub, US", carrier: "UPS SafeFreight", status: "Pending" }
+        ];
+
+        // ----------------- TRACE LOGS STATE -----------------
+        let systemLogs = [
+            { timestamp: new Date(Date.now() - 60000 * 15).toLocaleTimeString(), event: "Genesis Block sealed successfully.", type: "system" },
+            { timestamp: new Date(Date.now() - 60000 * 14).toLocaleTimeString(), event: "Block #1 added for IoT cold-chain telemetry.", type: "block" },
+            { timestamp: new Date(Date.now() - 60000 * 10).toLocaleTimeString(), event: "Block #2 appended with Route Optimization statistics.", type: "block" },
+            { timestamp: new Date(Date.now() - 60000 * 5).toLocaleTimeString(), event: "Dashboard metrics synchronized.", type: "system" }
+        ];
+
+        // Add Log helper
+        function addLog(event, type = "system") {
+            systemLogs.unshift({
+                timestamp: new Date().toLocaleTimeString(),
+                event,
+                type
+            });
+            renderLogs();
+        }
+
+        function renderLogs() {
+            const container = document.getElementById("reports-logs-container");
+            if (!container) return;
+
+            let html = "";
+            systemLogs.forEach(log => {
+                let badgeColor = "bg-slate-900 text-slate-400 border-slate-800";
+                if (log.type === "block") badgeColor = "bg-indigo-500/10 text-indigo-400 border-indigo-500/20";
+                else if (log.type === "inventory") badgeColor = "bg-amber-500/10 text-amber-400 border-amber-500/20";
+                else if (log.type === "alert") badgeColor = "bg-rose-500/10 text-rose-400 border-rose-500/20 animate-pulse";
+                else if (log.type === "success") badgeColor = "bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
+
+                html += `
+                    <div class="flex items-start gap-3 border-b border-slate-900 pb-2">
+                        <span class="text-[9px] text-slate-500 whitespace-nowrap pt-0.5">${log.timestamp}</span>
+                        <span class="px-1.5 py-0.5 rounded text-[8px] font-bold border shrink-0 ${badgeColor}">${log.type.toUpperCase()}</span>
+                        <p class="text-[11px] text-slate-300">${log.event}</p>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function clearSystemLogs() {
+            systemLogs = [];
+            addLog("Trace logs cleared by system administration.");
+            showToast("Trace Logs Cleared", "info");
+        }
+
+        // ----------------- TAB NAVIGATION MANAGER -----------------
+        function switchTab(tabId) {
+            // Hide all tab contents
+            document.querySelectorAll(".tab-content").forEach(el => {
+                el.classList.add("hidden");
+            });
+
+            // Show selected tab
+            document.getElementById(`tab-${tabId}`).classList.remove("hidden");
+
+            // Reset tab button stylings
+            document.querySelectorAll(".tab-btn").forEach(btn => {
+                btn.className = "tab-btn px-4 py-2 text-xs font-bold tracking-wider uppercase rounded-xl transition duration-200 border border-transparent text-slate-400 hover:bg-slate-900/50 hover:text-slate-200";
+            });
+
+            // Activate current tab button
+            const activeBtn = document.getElementById(`tab-${tabId}-btn`);
+            if (activeBtn) {
+                activeBtn.className = "tab-btn px-4 py-2 text-xs font-bold tracking-wider uppercase rounded-xl transition duration-200 border border-transparent bg-slate-900 text-indigo-400 border-indigo-500/30";
+            }
+
+            addLog(`Switched view to ${tabId.toUpperCase()} portal.`);
+        }
+
+        // ----------------- DYNAMIC TOASTS -----------------
+        function showToast(message, type = "success") {
+            const container = document.getElementById("toast-container");
+            const toast = document.createElement("div");
+            toast.className = `p-4 rounded-xl shadow-lg border text-xs font-mono flex items-center gap-3 animate-fade-in transition-all duration-300 translate-y-2 opacity-0 bg-slate-900 border-slate-800 text-slate-100`;
+            
+            let iconName = "info";
+
+            if (type === "success") {
+                toast.className = "p-4 rounded-xl shadow-lg border text-xs font-mono flex items-center gap-3 bg-emerald-950/95 border-emerald-500/30 text-emerald-400";
+                iconName = "check-circle";
+            } else if (type === "error") {
+                toast.className = "p-4 rounded-xl shadow-lg border text-xs font-mono flex items-center gap-3 bg-rose-950/95 border-rose-500/30 text-rose-400 animate-bounce";
+                iconName = "alert-triangle";
+            } else if (type === "info") {
+                toast.className = "p-4 rounded-xl shadow-lg border text-xs font-mono flex items-center gap-3 bg-indigo-950/95 border-indigo-500/30 text-indigo-300";
+                iconName = "info";
+            }
+
+            toast.innerHTML = `
+                <i data-lucide="${iconName}" class="w-4 h-4 shrink-0"></i>
+                <span>${message}</span>
+            `;
+            
+            container.appendChild(toast);
+            lucide.createIcons();
+
+            // Trigger enter animation
+            setTimeout(() => {
+                toast.classList.remove("translate-y-2", "opacity-0");
+            }, 10);
+
+            // Auto dismiss
+            setTimeout(() => {
+                toast.classList.add("translate-y-2", "opacity-0");
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }, 4000);
+        }
+
+        // ----------------- BLOCKCHAIN OPERATIONS -----------------
+        function fillSampleData() {
+            const index = Math.floor(Math.random() * samplePayloads.length);
+            document.getElementById("block-data-input").value = samplePayloads[index];
+            showToast("Sample data loaded into text area.", "info");
+        }
+
+        function publishBlock(event) {
+            if (event) event.preventDefault();
+            const input = document.getElementById("block-data-input");
+            const dataText = input.value.trim();
+            if (!dataText) return;
+
+            const lastBlock = blockchain[blockchain.size - 1] || blockchain[blockchain.length - 1];
+            const newBlock = {
+                id: blockchain.length,
+                timestamp: new Date().toLocaleString(),
+                data: dataText,
+                previousHash: lastBlock ? lastBlock.hash : "0000000000000000000000000000000000000000000000000000000000000000",
+                hash: ""
+            };
+
+            newBlock.hash = getBlockHash(newBlock);
+            blockchain.push(newBlock);
+
+            input.value = "";
+            addLog(`Block #${newBlock.id} added with cryptographic signature: ${newBlock.hash.substring(0, 16)}...`, "block");
+            showToast(`Block #${newBlock.id} successfully sealed & broadcast!`, "success");
+
+            // Re-render
+            updateUI();
+            verifyLedger(true); // silent verification to alert updates
+        }
+
+        // Sequential Integrity Check Algorithm
+        function verifyLedger(silent = false) {
+            let isValid = true;
+            let corruptedBlockIdx = [];
+            let logs = [];
+
+            logs.push(`<span class="text-indigo-400 font-bold">[AUDIT START] Checking consensus hash alignment...</span>`);
+            
+            // Check genesis block
+            const genesisHash = getBlockHash(blockchain[0]);
+            if (blockchain[0].hash !== genesisHash) {
+                isValid = false;
+                corruptedBlockIdx.push(0);
+                logs.push(`<span class="text-rose-400">[BREACH] Block #0 (Genesis) state mutated! Computed: ${genesisHash.substring(0, 12)}... Stored: ${blockchain[0].hash.substring(0, 12)}...</span>`);
+            } else {
+                logs.push(`<span class="text-indigo-400">[VERIFIED] Genesis Block hashes perfectly.</span>`);
+            }
+
+            // Loop through all blocks
+            for (let i = 1; i < blockchain.length; i++) {
+                const currentBlock = blockchain[i];
+                const prevBlock = blockchain[i - 1];
+
+                // 1. Verify links
+                if (currentBlock.previousHash !== prevBlock.hash) {
+                    isValid = false;
+                    if (!corruptedBlockIdx.includes(i)) corruptedBlockIdx.push(i);
+                    logs.push(`<span class="text-rose-400">[BREACH] Block #${currentBlock.id} link broken! Stored previousHash is invalid.</span>`);
+                }
+
+                // 2. Verify own hash calculation
+                const calculated = getBlockHash(currentBlock);
+                if (currentBlock.hash !== calculated) {
+                    isValid = false;
+                    if (!corruptedBlockIdx.includes(i)) corruptedBlockIdx.push(i);
+                    logs.push(`<span class="text-rose-400">[BREACH] Block #${currentBlock.id} data mutated! Recomputed hash mismatch.</span>`);
+                }
+
+                if (isValid && !corruptedBlockIdx.includes(i)) {
+                    logs.push(`<span class="text-emerald-400">[VERIFIED] Block #${currentBlock.id} successfully validated link to Block #${prevBlock.id}.</span>`);
+                }
+            }
+
+            // Update DOM console & Badge Statuses
+            const auditStatus = document.getElementById("audit-status");
+            const auditLogs = document.getElementById("audit-logs");
+            const headerBadge = document.getElementById("header-integrity-badge");
+            const globalSystemStatus = document.getElementById("stat-system-status");
+
+            if (isValid) {
+                if (auditStatus) {
+                    auditStatus.innerText = "✅ SECURE (100% Integrity)";
+                    auditStatus.className = "text-emerald-400 font-bold font-mono";
+                }
+                if (headerBadge) {
+                    headerBadge.className = "inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20";
+                    headerBadge.innerHTML = `<i data-lucide="activity" class="w-3.5 h-3.5 mr-1 animate-pulse"></i> SECURE`;
+                }
+                if (globalSystemStatus) {
+                    globalSystemStatus.innerText = "SECURE";
+                    globalSystemStatus.className = "text-2xl font-bold tracking-tight text-emerald-400 mb-1 flex items-center gap-2";
+                }
+                logs.push(`<span class="text-emerald-400 font-extrabold">[SUCCESS] Cryptographic trace complete. All blocks are verified and linked.</span>`);
+                if (!silent) {
+                    showToast("Cryptographic audit successful! Ledger secure.", "success");
+                    addLog("Manual cryptographic integrity audit complete: 100% Secure", "success");
+                }
+            } else {
+                if (auditStatus) {
+                    auditStatus.innerText = "❌ LEDGER COMPROMISED";
+                    auditStatus.className = "text-rose-500 font-bold font-mono animate-pulse";
+                }
+                if (headerBadge) {
+                    headerBadge.className = "inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-mono bg-rose-500/10 text-rose-400 border border-rose-500/20 animate-bounce";
+                    headerBadge.innerHTML = `<i data-lucide="alert-triangle" class="w-3.5 h-3.5 mr-1"></i> MUTATED`;
+                }
+                if (globalSystemStatus) {
+                    globalSystemStatus.innerText = "COMPROMISED";
+                    globalSystemStatus.className = "text-2xl font-bold tracking-tight text-rose-500 mb-1 flex items-center gap-2 animate-pulse";
+                }
+                logs.push(`<span class="text-rose-500 font-extrabold">[CRITICAL] Security violation. Mutated Block(s) identified: ${corruptedBlockIdx.join(", ")}</span>`);
+                if (!silent) {
+                    showToast("SECURITY BREACH: Cryptographic mismatches detected!", "error");
+                    addLog(`Critical blockchain violation: Corrupted Blocks [${corruptedBlockIdx.join(", ")}]`, "alert");
+                }
+            }
+
+            if (auditLogs) {
+                auditLogs.innerHTML = logs.map(l => `<p>${l}</p>`).join("");
+                auditLogs.scrollTop = auditLogs.scrollHeight;
+            }
+
+            // Update blocks styling individually to reflect verification
+            blockchain.forEach((block, idx) => {
+                const blockEl = document.getElementById(`block-card-${block.id}`);
+                const statusBadgeEl = document.getElementById(`block-status-badge-${block.id}`);
+                const isCorrupted = corruptedBlockIdx.includes(idx);
+
+                if (blockEl) {
+                    if (isCorrupted) {
+                        blockEl.className = "bg-slate-900 border-2 border-rose-500/80 rounded-xl p-5 font-mono text-xs shadow-lg shadow-rose-950/20 transition-all";
+                    } else {
+                        blockEl.className = "bg-slate-900 border border-slate-800 rounded-xl p-5 font-mono text-xs transition-all hover:border-slate-700";
+                    }
+                }
+
+                if (statusBadgeEl) {
+                    if (isCorrupted) {
+                        statusBadgeEl.className = "inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-rose-500/10 text-rose-400 border border-rose-500/20";
+                        statusBadgeEl.innerHTML = "❌ COMPROMISED (MUTATED DATA)";
+                    } else {
+                        statusBadgeEl.className = "inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20";
+                        statusBadgeEl.innerHTML = "✅ SECURE & IMMUTABLE";
+                    }
+                }
+            });
+
+            // Update Overview statistics and health bars
+            const progress = document.getElementById("audit-progress-bar");
+            const pctText = document.getElementById("audit-pct-text");
+            const dot = document.getElementById("audit-indicator-dot");
+
+            if (progress && pctText && dot) {
+                if (isValid) {
+                    progress.style.width = "100%";
+                    progress.className = "bg-emerald-500 h-1.5 rounded-full transition-all duration-500";
+                    pctText.innerText = "100% Cryptographic Security";
+                    dot.className = "w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse";
+                } else {
+                    const cleanPct = Math.round(((blockchain.length - corruptedBlockIdx.length) / blockchain.length) * 100);
+                    progress.style.width = `${cleanPct}%`;
+                    progress.className = "bg-rose-500 h-1.5 rounded-full transition-all duration-500";
+                    pctText.innerText = `${cleanPct}% Ledger Uncompromised`;
+                    dot.className = "w-2.5 h-2.5 rounded-full bg-rose-400 animate-ping";
+                }
+            }
+
+            lucide.createIcons();
+        }
+
+        // Open Hack Tamper Dialog
+        function openTamperModal() {
+            const select = document.getElementById("tamper-block-select");
+            let html = "";
+            blockchain.forEach(block => {
+                html += `<option value="${block.id}">Block #${block.id} (Signed: ${block.hash.substring(0, 10)}...)</option>`;
+            });
+            select.innerHTML = html;
+            
+            // Set initial value in textbox
+            if (blockchain.length > 0) {
+                document.getElementById("tamper-data-input").value = blockchain[0].data;
+            }
+
+            // Bind change listener to update data
+            select.onchange = (e) => {
+                const id = parseInt(e.target.value);
+                const block = blockchain.find(b => b.id === id);
+                if (block) {
+                    document.getElementById("tamper-data-input").value = block.data;
+                }
+            }
+
+            document.getElementById("tamper-modal").classList.remove("hidden");
+            addLog("Security alert: Sandbox hacker console opened.");
+        }
+
+        function closeTamperModal() {
+            document.getElementById("tamper-modal").classList.add("hidden");
+        }
+
+        // Apply malicious change to ledger data
+        function executeLedgerTamper() {
+            const blockId = parseInt(document.getElementById("tamper-block-select").value);
+            const rawText = document.getElementById("tamper-data-input").value.trim();
+            const rehashChecked = document.getElementById("tamper-rehash").checked;
+
+            if (!rawText) return;
+
+            const block = blockchain.find(b => b.id === blockId);
+            if (block) {
+                block.data = rawText;
+                
+                // If user checked "recalculate", rehash this block itself (keeps own correct but breaks subsequent links)
+                if (rehashChecked) {
+                    block.hash = getBlockHash(block);
+                    addLog(`Hacking: Mutated Block #${blockId} data and recalculated its own signature hash: ${block.hash.substring(0, 10)}...`, "alert");
+                } else {
+                    // Just change the data. This violates both "own hash checks" and previous hash matching.
+                    addLog(`Hacking: Mutated Block #${blockId} data to: "${rawText}" without signature adjustment.`, "alert");
+                }
+
+                showToast(`Block #${blockId} state maliciously corrupted!`, "error");
+                closeTamperModal();
+                updateUI();
+                verifyLedger(true); // Silent trigger to update state colors
+            }
+        }
+
+        // Quick button helper on block card
+        function tamperCardDirectly(id) {
+            const block = blockchain.find(b => b.id === id);
+            if (!block) return;
+            
+            block.data = "⚠️ TAMPERED: Financial ledger counts illegally modified in database.";
+            addLog(`Direct Tamper: Corrupted Block #${id} data payload in UI context.`, "alert");
+            showToast(`Block #${id} Mutated! Run verify check.`, "error");
+            updateUI();
+            verifyLedger(true);
+        }
+
+        // ----------------- INVENTORY ENGINE OPERATIONS -----------------
+        function renderInventory() {
+            const tbody = document.getElementById("inventory-tbody");
+            const searchVal = document.getElementById("search-inventory").value.toLowerCase();
+            const dispatchSelect = document.getElementById("dispatch-item-select");
+
+            if (!tbody) return;
+
+            let tbodyHtml = "";
+            let dispatchHtml = "";
+            let lowStockCount = 0;
+            let totalValue = 0;
+
+            inventory.forEach(item => {
+                // Calculation
+                totalValue += (item.quantity * item.unitPrice);
+                const isLowStock = item.quantity <= item.reorderLevel;
+                if (isLowStock) lowStockCount++;
+
+                // Build dropdown options for logistics dispatcher
+                dispatchHtml += `<option value="${item.id}">${item.name} (${item.quantity} in stock)</option>`;
+
+                // Search Filter matching
+                if (item.name.toLowerCase().includes(searchVal) || item.sku.toLowerCase().includes(searchVal) || item.category.toLowerCase().includes(searchVal)) {
+                    const statusText = isLowStock ? "Low Stock" : "Optimal";
+                    const statusClass = isLowStock ? "bg-rose-500/10 text-rose-400 border border-rose-500/20" : "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20";
+                    const animationClass = isLowStock ? "animate-pulse font-bold" : "";
+
+                    tbodyHtml += `
+                        <tr class="hover:bg-slate-900/40 transition">
+                            <td class="py-3 px-2 font-semibold text-slate-400">${item.sku}</td>
+                            <td class="py-3 px-2 text-white font-medium">${item.name}</td>
+                            <td class="py-3 px-2 text-indigo-400 text-[11px]">${item.category}</td>
+                            <td class="py-3 px-2 text-slate-300">$${item.unitPrice.toFixed(2)}</td>
+                            <td class="py-3 px-2 text-center text-white font-bold text-sm bg-slate-950/20">${item.quantity}</td>
+                            <td class="py-3 px-2 text-center text-slate-400">${item.reorderLevel}</td>
+                            <td class="py-3 px-2 text-center">
+                                <span class="px-2 py-0.5 rounded-md text-[10px] ${statusClass} ${animationClass}">
+                                    ${statusText}
+                                </span>
+                            </td>
+                            <td class="py-3 px-2 text-right">
+                                <div class="flex justify-end gap-1.5">
+                                    <button onclick="adjustStock(${item.id}, 1)" class="bg-indigo-600/15 text-indigo-400 border border-indigo-500/20 p-1.5 rounded-lg hover:bg-indigo-600/30 transition">
+                                        <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                                    </button>
+                                    <button onclick="adjustStock(${item.id}, -1)" class="bg-indigo-600/15 text-indigo-400 border border-indigo-500/20 p-1.5 rounded-lg hover:bg-indigo-600/30 transition">
+                                        <i data-lucide="minus" class="w-3.5 h-3.5"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }
+            });
+
+            tbody.innerHTML = tbodyHtml;
+            if (dispatchSelect) dispatchSelect.innerHTML = dispatchHtml;
+
+            // Update live metrics
+            const warningBanner = document.getElementById("low-stock-banner");
+            const warningBadge = document.getElementById("low-stock-count-badge");
+            const homeLowStockStat = document.getElementById("stat-low-stock-count");
+            const reportsSkus = document.getElementById("reports-total-skus");
+            const reportsVal = document.getElementById("reports-total-value");
+
+            if (warningBanner && warningBadge) {
+                if (lowStockCount > 0) {
+                    warningBanner.classList.remove("hidden");
+                    warningBadge.innerText = `${lowStockCount} Low Stock Alert${lowStockCount > 1 ? 's' : ''}`;
+                } else {
+                    warningBanner.classList.add("hidden");
+                }
+            }
+
+            if (homeLowStockStat) {
+                homeLowStockStat.innerText = `${lowStockCount} Low Stock SKU Alerts`;
+                if (lowStockCount > 0) {
+                    homeLowStockStat.className = "text-[10px] text-rose-400 font-mono font-bold animate-pulse";
+                } else {
+                    homeLowStockStat.className = "text-[10px] text-emerald-400 font-mono";
+                }
+            }
+
+            if (reportsSkus) reportsSkus.innerText = `${inventory.length} SKUs Monitored`;
+            if (reportsVal) reportsVal.innerText = `$${totalValue.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+
+            lucide.createIcons();
+        }
+
+        function filterInventory() {
+            renderInventory();
+        }
+
+        // Adjust stock +/- 
+        function adjustStock(id, delta) {
+            const item = inventory.find(i => i.id === id);
+            if (item) {
+                const oldQty = item.quantity;
+                item.quantity = Math.max(0, item.quantity + delta);
+                
+                addLog(`Stock adjusted for ${item.sku}: ${oldQty} ➔ ${item.quantity}`, "inventory");
+                
+                // If it hits reorder alert, add log
+                if (item.quantity <= item.reorderLevel && oldQty > item.reorderLevel) {
+                    addLog(`CRITICAL: Low-stock warning tripped for ${item.sku}! Only ${item.quantity} items left.`, "alert");
+                    showToast(`Low stock warning for ${item.name}!`, "error");
+                } else {
+                    showToast(`Updated stock count for ${item.sku}.`, "info");
+                }
+
+                updateUI();
+            }
+        }
+
+        // Add item from form
+        function addProduct(event) {
+            event.preventDefault();
+            const name = document.getElementById("prod-name").value.trim();
+            const sku = document.getElementById("prod-sku").value.trim().toUpperCase();
+            const category = document.getElementById("prod-category").value;
+            const quantity = parseInt(document.getElementById("prod-qty").value);
+            const reorder = parseInt(document.getElementById("prod-reorder").value);
+            const price = parseFloat(document.getElementById("prod-price").value);
+
+            if (!name || !sku) return;
+
+            // Check if SKU exists
+            if (inventory.some(i => i.sku === sku)) {
+                showToast(`Product SKU ${sku} already registered in warehouse.`, "error");
+                return;
+            }
+
+            const newItem = {
+                id: inventory.length + 1,
+                name,
+                sku,
+                category,
+                quantity,
+                reorderLevel: reorder,
+                unitPrice: price
+            };
+
+            inventory.push(newItem);
+            
+            // Log & toast
+            addLog(`Product registered in database: ${sku} - ${name} ($${price.toFixed(2)})`, "inventory");
+            showToast("New Product Registered!", "success");
+
+            // Reset Form
+            document.getElementById("prod-name").value = "";
+            document.getElementById("prod-sku").value = "";
+            document.getElementById("prod-qty").value = "100";
+            document.getElementById("prod-reorder").value = "30";
+            document.getElementById("prod-price").value = "25.00";
+
+            updateUI();
+        }
+
+        // ----------------- LOGISTICS ENGINE & OPERATIONS -----------------
+        function renderLogistics() {
+            const container = document.getElementById("shipments-container");
+            if (!container) return;
+
+            let html = "";
+            shipments.forEach(sh => {
+                let statusColor = "bg-amber-500/10 text-amber-400 border border-amber-500/20";
+                if (sh.status === "Delivered") statusColor = "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20";
+                else if (sh.status === "Delayed") statusColor = "bg-rose-500/10 text-rose-400 border border-rose-500/20 animate-pulse";
+
+                html += `
+                    <div class="bg-slate-950 border border-slate-800/85 rounded-xl p-4 space-y-3 relative font-mono text-xs">
+                        <div class="flex justify-between items-start border-b border-slate-900 pb-2 mb-2">
+                            <div>
+                                <span class="text-xs font-bold text-indigo-400">${sh.id}</span>
+                                <span class="text-[10px] text-slate-500 ml-2">Carrier: ${sh.carrier}</span>
+                            </div>
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold shrink-0 ${statusColor}">${sh.status}</span>
+                        </div>
+                        <div class="space-y-1 text-[11px]">
+                            <p class="text-slate-400"><strong class="text-slate-500">CARGO:</strong> ${sh.product}</p>
+                            <p class="text-slate-400"><strong class="text-slate-500">QUANTITY:</strong> ${sh.qty} units</p>
+                            <p class="text-slate-400"><strong class="text-slate-500">DESTINATION:</strong> ${sh.destination}</p>
+                        </div>
+                        
+                        <div class="flex justify-between items-center pt-2.5 border-t border-slate-900 text-[10px]">
+                            <span class="text-slate-500">Cold-Chain Temperature:</span>
+                            <span class="text-emerald-400 font-bold">Stable (4.5°C)</span>
+                        </div>
+
+                        <div class="pt-2 flex justify-end gap-1.5">
+                            ${sh.status !== 'Delivered' ? `
+                                <button onclick="updateShipmentStatus('${sh.id}', 'Delivered')" class="bg-emerald-600/10 text-emerald-400 border border-emerald-500/20 px-2 py-1 rounded text-[10px] font-semibold hover:bg-emerald-600/25 transition">
+                                    Deliver Cargo
+                                </button>
+                                <button onclick="updateShipmentStatus('${sh.id}', 'Delayed')" class="bg-rose-600/10 text-rose-400 border border-rose-500/20 px-2 py-1 rounded text-[10px] font-semibold hover:bg-rose-600/25 transition">
+                                    Flag Delay
+                                </button>
+                            ` : `
+                                <span class="text-[9px] text-slate-500 flex items-center gap-1"><i data-lucide="check" class="w-3 h-3 text-emerald-400"></i> Signed & Sealed</span>
+                            `}
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+
+            // Home stat count
+            const transitCount = shipments.filter(s => s.status !== "Delivered").length;
+            const dashboardActiveEl = document.getElementById("dashboard-active-shipments");
+            if (dashboardActiveEl) {
+                dashboardActiveEl.innerText = `${transitCount} In Transit`;
+            }
+
+            lucide.createIcons();
+        }
+
+        // Dispatch Cargo Action - deduction + seal new block on chain!
+        function dispatchShipment(event) {
+            event.preventDefault();
+            const itemId = parseInt(document.getElementById("dispatch-item-select").value);
+            const qty = parseInt(document.getElementById("dispatch-qty").value);
+            const dest = document.getElementById("dispatch-dest").value.trim();
+            const carrier = document.getElementById("dispatch-carrier").value;
+
+            if (!itemId || !qty || !dest) return;
+
+            const item = inventory.find(i => i.id === itemId);
+            if (!item) return;
+
+            // 1. Stock check
+            if (item.quantity < qty) {
+                showToast(`Insufficient Stock! Warehouse only holds ${item.quantity} of ${item.name}`, "error");
+                addLog(`Logistics Fail: Insufficient warehouse stock for SKU ${item.sku}. Requested: ${qty}`, "alert");
+                return;
+            }
+
+            // 2. Deduct physical inventory
+            item.quantity -= qty;
+            addLog(`Logistics Dispatch: Deducted ${qty} units of ${item.sku} for delivery manifest.`, "inventory");
+
+            // 3. Create Shipment cargo model
+            const shipmentId = `SH-${Math.floor(100 + Math.random() * 900)}`;
+            const newShipment = {
+                id: shipmentId,
+                product: item.name,
+                qty,
+                destination: dest,
+                carrier,
+                status: "Pending"
+            };
+            shipments.unshift(newShipment);
+
+            // 4. AUTOMATICALLY SEAL SHIPMENT manifest as a new Cryptographic Block!
+            const lastBlock = blockchain[blockchain.length - 1];
+            const blockData = `LOGISTICS MANIFEST SEALED: Shipment ID ${shipmentId} dispatched. Carrier: ${carrier}. Cargo: ${qty} units of ${item.name} destined for ${dest}. Cold-chain initialized.`;
+            const newBlock = {
+                id: blockchain.length,
+                timestamp: new Date().toLocaleString(),
+                data: blockData,
+                previousHash: lastBlock ? lastBlock.hash : "0000000000000000000000000000000000000000000000000000000000000000",
+                hash: ""
+            };
+            newBlock.hash = getBlockHash(newBlock);
+            blockchain.push(newBlock);
+
+            addLog(`Ledger immutable block #${newBlock.id} generated automatically on logistics dispatch.`, "block");
+            showToast(`Cargo Dispatched! Block #${newBlock.id} Sealed.`, "success");
+
+            // Reset Form Inputs
+            document.getElementById("dispatch-qty").value = "10";
+            document.getElementById("dispatch-dest").value = "";
+
+            updateUI();
+            verifyLedger(true); // silent verify to alert updates
+        }
+
+        function updateShipmentStatus(shId, nextStatus) {
+            const sh = shipments.find(s => s.id === shId);
+            if (sh) {
+                const oldStatus = sh.status;
+                sh.status = nextStatus;
+
+                // Seal state change block
+                const lastBlock = blockchain[blockchain.length - 1];
+                const blockData = `CARGO TRACKING MUTATION: Shipment ${shId} status updated from '${oldStatus}' to '${nextStatus}'. Carrier handshake complete.`;
+                const newBlock = {
+                    id: blockchain.length,
+                    timestamp: new Date().toLocaleString(),
+                    data: blockData,
+                    previousHash: lastBlock ? lastBlock.hash : "0000000000000000000000000000000000000000000000000000000000000000",
+                    hash: ""
+                };
+                newBlock.hash = getBlockHash(newBlock);
+                blockchain.push(newBlock);
+
+                addLog(`Shipment ${shId} marked ${nextStatus.toUpperCase()}. Blockchain signature sealed.`, "success");
+                showToast(`Cargo manifest status updated!`, "info");
+
+                updateUI();
+                verifyLedger(true);
+            }
+        }
+
+        // ----------------- BLOCKCHAIN RENDER OPERATIONS -----------------
+        let ledgerFilterMode = "all";
+
+        function filterLedger(mode) {
+            ledgerFilterMode = mode;
+            renderLedger();
+        }
+
+        function renderLedger() {
+            const container = document.getElementById("blocks-container");
+            const previewContainer = document.getElementById("overview-blocks-preview");
+            if (!container) return;
+
+            // Perform audit silently first to determine corruption indexes
+            let corruptedBlockIdx = [];
+            const genesisHash = getBlockHash(blockchain[0]);
+            if (blockchain[0].hash !== genesisHash) {
+                corruptedBlockIdx.push(0);
+            }
+            for (let i = 1; i < blockchain.length; i++) {
+                if (blockchain[i].previousHash !== blockchain[i - 1].hash || blockchain[i].hash !== getBlockHash(blockchain[i])) {
+                    corruptedBlockIdx.push(i);
+                }
+            }
+
+            // 1. Build main page ledger
+            let mainHtml = "";
+            let counter = 0;
+
+            [...blockchain].reverse().forEach(block => {
+                const isCorrupted = corruptedBlockIdx.includes(block.id);
+                const isGenesis = block.id === 0;
+
+                // Match filter mode
+                if (ledgerFilterMode === "verified" && isCorrupted) return;
+                if (ledgerFilterMode === "tampered" && !isCorrupted) return;
+
+                const borderClass = isCorrupted 
+                    ? "bg-slate-900 border-2 border-rose-500 shadow-lg shadow-rose-950/20" 
+                    : "bg-slate-900 border border-slate-800 hover:border-slate-700";
+                
+                const badgeHtml = isCorrupted 
+                    ? `<span id="block-status-badge-${block.id}" class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-rose-500/10 text-rose-400 border border-rose-500/20">❌ COMPROMISED (MUTATED DATA)</span>`
+                    : `<span id="block-status-badge-${block.id}" class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">✅ SECURE & IMMUTABLE</span>`;
+
+                mainHtml += `
+                    <div id="block-card-${block.id}" class="${borderClass} rounded-2xl p-5 font-mono text-xs transition-all space-y-4">
+                        <!-- Card Header -->
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-slate-800/80 pb-2.5 gap-2.5">
+                            <div class="flex items-center gap-2">
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-extrabold ${isGenesis ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20' : 'bg-slate-800 text-slate-300'}">
+                                    BLOCK #${block.id}
+                                </span>
+                                <span class="text-[10px] text-slate-500">${block.timestamp}</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                ${badgeHtml}
+                                ${!isGenesis && !isCorrupted ? `
+                                    <button onclick="tamperCardDirectly(${block.id})" class="text-[9px] font-bold px-1.5 py-0.5 rounded border border-rose-500/30 text-rose-400 bg-rose-500/5 hover:bg-rose-500/15 transition-all">
+                                        Corrupt
+                                    </button>
+                                ` : ''}
+                            </div>
+                        </div>
+
+                        <!-- Data Body -->
+                        <div class="space-y-3">
+                            <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-900 text-slate-100 font-mono leading-relaxed">
+                                <span class="text-[9px] text-slate-500 font-bold uppercase block mb-1">Payload Manifest Data:</span>
+                                ${block.data}
+                            </div>
+                            <div class="space-y-1.5 text-[10px]">
+                                <div class="flex justify-between items-center bg-slate-950/40 p-1.5 rounded border border-slate-900/60">
+                                    <span class="text-slate-500">Block Signature Hash:</span>
+                                    <span class="text-indigo-400 font-bold truncate max-w-[200px] sm:max-w-[400px]">${block.hash}</span>
+                                </div>
+                                <div class="flex justify-between items-center bg-slate-950/40 p-1.5 rounded border border-slate-900/60">
+                                    <span class="text-slate-500">Parent Link Hash:</span>
+                                    <span class="text-slate-400 font-medium truncate max-w-[200px] sm:max-w-[400px]">${block.previousHash}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                counter++;
+            });
+
+            if (counter === 0) {
+                container.innerHTML = `<div class="text-center py-10 text-xs text-slate-500 font-mono">No blocks found matching filter category.</div>`;
+            } else {
+                container.innerHTML = mainHtml;
+            }
+
+            // 2. Build Dashboard Mini Preview Block feed (limit to 3 latest blocks)
+            if (previewContainer) {
+                let previewHtml = "";
+                const previewArray = [...blockchain].reverse().slice(0, 3);
+                
+                previewArray.forEach(block => {
+                    const isCorrupted = corruptedBlockIdx.includes(block.id);
+                    const borderClass = isCorrupted ? "border-rose-500/60 shadow-lg shadow-rose-950/20 bg-rose-950/5" : "border-slate-800/80 hover:border-indigo-500/20 bg-slate-900/50";
+                    const statusText = isCorrupted ? "CORRUPTED" : "SECURE";
+                    const statusClass = isCorrupted ? "text-rose-400 bg-rose-500/10 border-rose-500/20" : "text-emerald-400 bg-emerald-500/10 border-emerald-500/20";
+
+                    previewHtml += `
+                        <div class="bg-slate-900 p-4.5 rounded-xl border ${borderClass} font-mono text-[11px] space-y-3.5 transition-all">
+                            <div class="flex justify-between items-center border-b border-slate-950 pb-2">
+                                <span class="font-bold text-white uppercase">Block #${block.id}</span>
+                                <span class="px-1.5 py-0.5 rounded text-[8px] font-bold border ${statusClass}">${statusText}</span>
+                            </div>
+                            <p class="text-slate-300 line-clamp-2 h-8 leading-normal">${block.data}</p>
+                            <div class="pt-1 text-[9px] border-t border-slate-950/60 flex justify-between items-center text-slate-500">
+                                <span>Hash signature:</span>
+                                <span class="text-indigo-400 font-bold truncate max-w-[120px]">${block.hash}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+                previewContainer.innerHTML = previewHtml;
+            }
+
+            // Update overview numbers
+            const statsTotal = document.getElementById("stat-total-blocks");
+            const statsHeight = document.getElementById("reports-ledger-height");
+            const lastHashEl = document.getElementById("stat-last-hash");
+            const lastTimeEl = document.getElementById("stat-last-timestamp");
+
+            if (statsTotal) statsTotal.innerText = blockchain.length;
+            if (statsHeight) statsHeight.innerText = `${blockchain.length} Sealed Blocks`;
+            if (blockchain.length > 0) {
+                const lastBlock = blockchain[blockchain.length - 1];
+                if (lastHashEl) lastHashEl.innerText = lastBlock.hash;
+                if (lastTimeEl) lastTimeEl.innerText = `Index #${lastBlock.id} • Block Sealed: ${lastBlock.timestamp}`;
+            }
+
+            lucide.createIcons();
+        }
+
+        // ----------------- AI CONVERSATIONAL SIMULATOR -----------------
+        function sendChatMessage(event) {
+            event.preventDefault();
+            const input = document.getElementById("chat-input");
+            const query = input.value.trim();
+            if (!query) return;
+
+            const chatMessages = document.getElementById("chat-messages");
+            
+            // Render User query immediately
+            const userHtml = `
+                <div class="flex gap-3 justify-end max-w-[85%] ml-auto">
+                    <div class="bg-indigo-600 text-white p-3 rounded-2xl rounded-tr-none text-xs leading-relaxed font-mono shadow-md">
+                        ${query}
+                    </div>
+                </div>
+            `;
+            chatMessages.insertAdjacentHTML('beforeend', userHtml);
+            input.value = "";
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            // Generate intelligent context-aware simulator response
+            let responseText = "Analyzing network statistics and route variables. Stand by...";
+            const lowercaseQuery = query.toLowerCase();
+
+            // Analyze state to insert intelligent numbers
+            const lowStockCount = inventory.filter(i => i.quantity <= itemReorderLevel(i)).length;
+            const systemSecure = verifySystemIntegritySilently();
+
+            if (lowercaseQuery.includes("status") || lowercaseQuery.includes("health") || lowercaseQuery.includes("audit")) {
+                if (systemSecure) {
+                    responseText = `Nexus Node SCM reporting status: <strong>SECURE</strong>. Master cluster contains <strong>${blockchain.length} verified cryptographic blocks</strong> with a consensus audit level of 100% integrity. Hashing links are pristine.`;
+                } else {
+                    responseText = `<strong>CRITICAL SECURITY WARNING:</strong> Cryptographic integrity mismatches detected in database memory ledger. One or more blocks have been manually mutated! Please visit the <strong>Control Panel</strong> or <strong>Ledger</strong> to verify block hashing.`;
+                }
+            } else if (lowercaseQuery.includes("stock") || lowercaseQuery.includes("inventory") || lowercaseQuery.includes("low")) {
+                if (lowStockCount > 0) {
+                    const names = inventory.filter(i => i.quantity <= i.reorderLevel).map(i => `${i.sku} (${item.quantity} left)`).join(", ");
+                    responseText = `Warehouse inventory scans detect <strong>${lowStockCount} low stock alerts</strong> requiring replenishment: <strong>${names}</strong>. Click on the 'Warehouse Inventory' tab to inspect and replenish stock counts.`;
+                } else {
+                    responseText = `All <strong>${inventory.length} cataloged products</strong> reside within healthy stock buffer configurations. Zero low-stock alerts currently active.`;
+                }
+            } else if (lowercaseQuery.includes("hash") || lowercaseQuery.includes("crypto") || lowercaseQuery.includes("blockchain")) {
+                responseText = `This simulator implements deterministic <strong>Cyrb128 state hashing</strong>. Each block chains securely to its antecedent by taking ` + "`block.id + block.timestamp + block.data + block.previousHash`" + ` and translating it into a 32-character hexadecimal key. Tampering with any data string corrupts subsequent verification routines.`;
+            } else if (lowercaseQuery.includes("shipment") || lowercaseQuery.includes("logistics") || lowercaseQuery.includes("dispatch")) {
+                const transit = shipments.filter(s => s.status !== "Delivered").length;
+                responseText = `Logistics manifest has <strong>${transit} cargos in transit</strong> out of ${shipments.length} logged manifests. Dispatching a shipment through the 'Cold-Chain Logistics' tab automatically updates warehouse storage levels and seals a new ledger block.`;
+            } else {
+                responseText = `Inquiry recorded: "${query}". Scanning local sandbox systems... Hashing layers report zero structural failures. Supply chain KPIs remain perfectly synchronized in localized storage.`;
+            }
+
+            function itemReorderLevel(i) { return i.reorderLevel; }
+
+            // Simulate typing state
+            const typingHtmlId = "typing-" + Date.now();
+            const typingHtml = `
+                <div class="flex gap-3 max-w-[85%] animate-fade-in" id="${typingHtmlId}">
+                    <div class="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 flex items-center justify-center shrink-0">
+                        <i data-lucide="bot" class="w-4 h-4"></i>
+                    </div>
+                    <div class="bg-slate-950 border border-slate-800 text-slate-400 p-3 rounded-2xl rounded-tl-none text-xs flex items-center gap-1.5 font-mono">
+                        <span class="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce"></span>
+                        <span class="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce [animation-delay:0.2s]"></span>
+                        <span class="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce [animation-delay:0.4s]"></span>
+                    </div>
+                </div>
+            `;
+            
+            setTimeout(() => {
+                chatMessages.insertAdjacentHTML('beforeend', typingHtml);
+                lucide.createIcons();
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+
+                // Deliver final simulated AI response
+                setTimeout(() => {
+                    const typingElem = document.getElementById(typingHtmlId);
+                    if (typingElem) typingElem.remove();
+
+                    const botHtml = `
+                        <div class="flex gap-3 max-w-[85%]">
+                            <div class="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 flex items-center justify-center shrink-0">
+                                <i data-lucide="bot" class="w-4 h-4"></i>
+                            </div>
+                            <div class="bg-slate-950 border border-slate-800 text-slate-100 p-3 rounded-2xl rounded-tl-none leading-relaxed space-y-2">
+                                <p>${responseText}</p>
+                            </div>
+                        </div>
+                    `;
+                    chatMessages.insertAdjacentHTML('beforeend', botHtml);
+                    lucide.createIcons();
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }, 1000);
+
+            }, 250);
+        }
+
+        function verifySystemIntegritySilently() {
+            let isValid = true;
+            if (blockchain.length === 0) return true;
+            if (blockchain[0].hash !== getBlockHash(blockchain[0])) return false;
+            for (let i = 1; i < blockchain.length; i++) {
+                if (blockchain[i].previousHash !== blockchain[i - 1].hash || blockchain[i].hash !== getBlockHash(blockchain[i])) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        // ----------------- APP INITIALIZATION & UI STATE MANAGER -----------------
+        function updateUI() {
+            renderInventory();
+            renderLogistics();
+            renderLedger();
+            renderLogs();
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            // Initial setup
+            resetBlockchainToDefault();
+            updateUI();
+        });
+    </script>
+</body>
+</html>

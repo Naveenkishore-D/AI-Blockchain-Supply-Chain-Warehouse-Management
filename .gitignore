@@ -1,0 +1,34 @@
+node_modules/
+build/
+dist/
+coverage/
+.DS_Store
+*.log
+.env*
+!.env.example
+
+# Production database files
+data-store.json
+
+# Docker artifacts
+.docker/
+
+# IDEs and Editors
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Java / Maven artifacts (for backend-java)
+**/target/
+**/*.class
+**/out/
+.metadata/
+.classpath
+.project
+.settings/
+*.tmp
+*.bak

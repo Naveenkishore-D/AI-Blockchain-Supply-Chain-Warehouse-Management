@@ -1,0 +1,21 @@
+version: "3.8"
+
+services:
+  nexus-scm:
+    container_name: nexus-scm-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: nexus-scm:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - NODE_ENV=production
+      # Secret API key variables forwarded from host environment or .env file
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+    volumes:
+      # Mount the local JSON database to persist blockchain records, inventory, and telemetry
+      - ./data-store.json:/app/data-store.json
+    restart: unless-stopped

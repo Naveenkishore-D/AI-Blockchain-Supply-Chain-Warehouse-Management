@@ -1,0 +1,67 @@
+{
+	"info": {
+		"name": "Nexus Supply Chain API",
+		"description": "API collection for Nexus Supply Chain Management",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/api/auth/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						},
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"admin\",\n  \"password\": \"adminPassword\"\n}"
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Warehouses",
+			"item": [
+				{
+					"name": "Get Warehouses",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/warehouses",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"warehouses"
+							]
+						}
+					}
+				}
+			]
+		}
+	]
+}
