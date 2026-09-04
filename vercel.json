@@ -1,10 +1,5 @@
 {
   "version": 2,
-  "functions": {
-    "api/index.ts": {
-      "includeFiles": "data-store.json"
-    }
-  },
   "rewrites": [
     {
       "source": "/api/(.*)",
